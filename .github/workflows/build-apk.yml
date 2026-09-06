@@ -21,6 +21,7 @@ jobs:
 
       - name: Prepare web files
         run: |
+          rm -rf www
           mkdir -p www
           cp index.html www/
           cp style.css www/
@@ -29,6 +30,13 @@ jobs:
           cp admin.html www/
           cp admin.css www/
           cp admin.js www/
+
+      - name: Verify Capacitor config
+        run: |
+          echo "Checking capacitor.config.json:"
+          cat capacitor.config.json
+          echo "Checking www directory:"
+          ls -la www
 
       - name: Create Android project
         run: npx cap add android
