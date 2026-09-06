@@ -14,13 +14,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
 
-      - name: Check Capacitor
-        run: npx cap --version
+      - name: Prepare web files
+        run: |
+          mkdir -p www
+          cp index.html www/
+          cp style.css www/
+          cp app.js www/
+          cp config.js www/
+          cp admin.html www/
+          cp admin.css www/
+          cp admin.js www/
 
       - name: Create Android project
         run: npx cap add android
