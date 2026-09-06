@@ -8,41 +8,77 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build web app
-        run: npm run build --if-present
-
-      - name: Install Capacitor
+      - name: Prepare Admin App
         run: |
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          rm -rf www
+          mkdir -p www
 
-      - name: Add Android platform
-        run: npx cap add android
+          cp admin.html www/admin.html
+          cp admin.css www/admin.css
+          cp admin.js www/admin.js
+          cp config.js www/config.js
 
-      - name: Sync Capacitor
-        run: npx cap sync android
+          cat > www/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="ar" dir="rtl">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>حياتي - لوحة المدير</title>
+            <meta http-equiv="refresh" content="0; url=admin.html">
+            <script>
+              window.location.replace("admin.html");
+            </script>
+          </head>
+          <body>
+            <p>جاري فتح لوحة المدير...</p>
+            <a href="admin.html">فتح لوحة المدير</a>
+          </body>
+          </html>
+          EOF
 
-      - name: Build APK
+      - name: Verify Admin App
+        run: |
+          echo "===== www files ====="
+          ls -la www
+          echo "===== index.html ====="
+          cat www/index.html
+
+      - name: Create Android project
+        run: |
+          rm -rf android
+          npx cap add android
+          npx cap sync android
+
+      - name: Force Gradle to Java 21
         working-directory: android
-        run: ./gradlew assembleDebug
-
-      - name: Rename APK
         run: |
-          mkdir -p output
-          cp android/app/build/outputs/apk/debug/app-debug.apk output/Hayati-Admin.apk
+          echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
+          ./gradlew -version
 
-      - name: Upload APK
+      - name: Build Admin APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload Admin APK
         uses: actions/upload-artifact@v4
         with:
           name: Hayati-Admin-APK
-          path: output/Hayati-Admin.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
