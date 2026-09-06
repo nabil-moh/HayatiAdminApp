@@ -33,16 +33,16 @@ jobs:
 
       - name: Verify Capacitor config
         run: |
-          echo "Checking capacitor.config.json:"
+          echo "===== capacitor.config.json ====="
           cat capacitor.config.json
-          echo "Checking www directory:"
+          echo "===== www files ====="
           ls -la www
 
       - name: Create Android project
-        run: npx cap add android
-
-      - name: Sync web application
-        run: npx cap sync android
+        run: |
+          rm -rf android
+          npx cap add android
+          npx cap sync android
 
       - name: Setup Java
         uses: actions/setup-java@v4
