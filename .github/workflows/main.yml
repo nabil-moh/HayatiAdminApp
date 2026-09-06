@@ -17,12 +17,6 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Check Java
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME"
-          java -version
-          javac -version
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -48,30 +42,42 @@ jobs:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>حياتي - لوحة المدير</title>
-            <meta http-equiv="refresh" content="0; url=admin.html">
             <script>
               window.location.replace("admin.html");
             </script>
           </head>
           <body>
-            <p>جاري فتح لوحة المدير...</p>
-            <a href="admin.html">فتح لوحة المدير</a>
+            جاري فتح لوحة المدير...
           </body>
           </html>
           EOF
 
-      - name: Verify Admin App
+      - name: Set Admin Capacitor Config
         run: |
-          echo "===== www files ====="
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.hayati.admin",
+            "appName": "Hayati Admin",
+            "webDir": "www"
+          }
+          EOF
+
+      - name: Verify Admin Config
+        run: |
+          echo "===== Capacitor Config ====="
+          cat capacitor.config.json
+          echo "===== Web Files ====="
           ls -la www
-          echo "===== index.html ====="
-          cat www/index.html
 
       - name: Create Android project
         run: |
           rm -rf android
           npx cap add android
           npx cap sync android
+
+      - name: Verify Android Package
+        run: |
+          grep -R "com.hayati.admin" android/app || true
 
       - name: Force Gradle to Java 21
         working-directory: android
