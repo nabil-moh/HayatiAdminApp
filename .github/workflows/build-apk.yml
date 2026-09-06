@@ -1,4 +1,4 @@
-name: Build Hayati APK
+name: Build Hayati APK v2
 
 on:
   workflow_dispatch:
@@ -19,10 +19,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create Capacitor Android project
+      - name: Create Android project
         run: npx cap add android
 
-      - name: Sync web files
+      - name: Sync Hayati files
         run: npx cap sync android
 
       - name: Setup Java
