@@ -1,4 +1,4 @@
-name: Build Hayati APK
+name: Build Hayati Admin APK
 
 on:
   workflow_dispatch:
@@ -31,24 +31,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prepare web files
+      - name: Prepare Admin App
         run: |
           rm -rf www
           mkdir -p www
-          cp index.html www/
-          cp style.css www/
-          cp app.js www/
-          cp config.js www/
-          cp admin.html www/
-          cp admin.css www/
-          cp admin.js www/
 
-      - name: Verify Capacitor config
+          cp admin.html www/index.html
+          cp admin.css www/admin.css
+          cp admin.js www/admin.js
+          cp config.js www/config.js
+
+      - name: Verify Admin files
         run: |
-          echo "===== capacitor.config.json ====="
-          cat capacitor.config.json
-          echo "===== www files ====="
+          echo "===== Admin APK files ====="
           ls -la www
+          echo "===== Start page ====="
+          head -20 www/index.html
 
       - name: Create Android project
         run: |
@@ -62,12 +60,12 @@ jobs:
           echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
           ./gradlew -version
 
-      - name: Build APK
+      - name: Build Admin APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK
+      - name: Upload Admin APK
         uses: actions/upload-artifact@v4
         with:
-          name: Hayati-APK
+          name: Hayati-Admin-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
