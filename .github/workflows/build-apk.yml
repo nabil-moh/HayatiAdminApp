@@ -17,16 +17,16 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Check Java
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+          javac -version
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Check Java
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME"
-          "$JAVA_HOME/bin/java" -version
-          "$JAVA_HOME/bin/javac" -version
 
       - name: Install dependencies
         run: npm install
@@ -43,9 +43,6 @@ jobs:
           cp admin.css www/
           cp admin.js www/
 
-      - name: Verify Capacitor config
-        run: cat capacitor.config.json
-
       - name: Create Android project
         run: |
           rm -rf android
@@ -56,15 +53,11 @@ jobs:
         working-directory: android
         run: |
           echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
-          echo "===== Gradle properties ====="
-          cat gradle.properties
-          echo "===== Gradle version ====="
           ./gradlew -version
 
       - name: Build APK
         working-directory: android
-        run: |
-          ./gradlew assembleDebug --no-daemon --stacktrace
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
