@@ -1,877 +1,621 @@
-(() => {
-  "use strict";
-
-  const cfg = window.HAYATI_CONFIG || {};
-  const supabaseLib = window.supabase;
-
-  const $ = (selector) => document.querySelector(selector);
-
-  const DEFAULT_STORE_COLOR = "#8b3f62";
-
-  const demo = [
-    {
-      id: "demo-1",
-      name: "فستان وردي ناعم",
-      category: "ملابس",
-      price: 2900,
-      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=700&q=80"
-    },
-    {
-      id: "demo-2",
-      name: "بلوزة أنيقة",
-      category: "ملابس",
-      price: 1850,
-      image: "https://images.unsplash.com/photo-1564257577054-0e5ab90e0f0f?auto=format&fit=crop&w=700&q=80"
-    },
-    {
-      id: "demo-3",
-      name: "عباية مطرزة",
-      category: "ملابس",
-      price: 3500,
-      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=80"
-    },
-    {
-      id: "demo-4",
-      name: "عطر نسائي أنيق",
-      category: "عطور",
-      price: 2200,
-      image: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=700&q=80"
-    },
-    {
-      id: "demo-5",
-      name: "سيروم للبشرة",
-      category: "مواد التجميل",
-      price: 1950,
-      image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700&q=80"
-    },
-    {
-      id: "demo-6",
-      name: "أحمر شفاه مطفي",
-      category: "مواد التجميل",
-      price: 1250,
-      image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=700&q=80"
-    },
-    {
-      id: "demo-7",
-      name: "حذاء نسائي أنيق",
-      category: "أحذية",
-      price: 3200,
-      image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=700&q=80"
-    },
-    {
-      id: "demo-8",
-      name: "حذاء بكعب أنيق",
-      category: "أحذية",
-      price: 3900,
-      image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=700&q=80"
-    }
-  ];
-
-  const wilayas = [
-    "أدرار","الشلف","الأغواط","أم البواقي","باتنة","بجاية",
-    "بسكرة","بشار","البليدة","البويرة","تمنراست","تبسة",
-    "تلمسان","تيارت","تيزي وزو","الجزائر","الجلفة","جيجل",
-    "سطيف","سعيدة","سكيكدة","سيدي بلعباس","عنابة","قالمة",
-    "قسنطينة","المدية","مستغانم","المسيلة","معسكر","ورقلة",
-    "وهران","البيض","إليزي","برج بوعريريج","بومرداس",
-    "الطارف","تندوف","تيسمسيلت","الوادي","خنشلة","سوق أهراس",
-    "تيبازة","ميلة","عين الدفلى","النعامة","عين تموشنت",
-    "غرداية","غليزان","تيميمون","برج باجي مختار","أولاد جلال",
-    "بني عباس","عين صالح","عين قزام","تقرت","جانت","المغير",
-    "المنيعة"
-  ];
-
-  const money = (value) =>
-    new Intl.NumberFormat("ar-DZ").format(Number(value) || 0) + " دج";
-
-  const esc = (value) =>
-    String(value ?? "").replace(/[&<>"']/g, (char) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[char]));
-
-  let db = null;
-  let products = [...demo];
-  let cart = loadCart();
-  let activeCat = "";
-  let toastTimer = null;
-
-  function loadCart() {
-    try {
-      const value = JSON.parse(
-        localStorage.getItem("hayati_cart") || "[]"
-      );
-
-      return Array.isArray(value) ? value : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function saveCart() {
-    localStorage.setItem(
-      "hayati_cart",
-      JSON.stringify(cart)
-    );
-
-    renderCart();
-  }
-
-  function toast(text) {
-    const element = $("#toast");
-
-    if (!element) return;
-
-    element.textContent = text;
-    element.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer = setTimeout(() => {
-      element.classList.remove("show");
-    }, 2300);
-  }
-
-  function setStoreColor(color) {
-    const value = color || DEFAULT_STORE_COLOR;
-
-    const root = document.documentElement;
-
-    root.style.setProperty("--store-color", value);
-    root.style.setProperty("--store-primary", value);
-    root.style.setProperty("--store-accent", value);
-  }
-
-  function applyLogo(url) {
-    const logo = $("#siteLogo");
-    const fallback = $("#brandFallback");
-
-    if (!logo) return;
-
-    if (url) {
-      logo.src = url;
-      logo.hidden = false;
-
-      if (fallback) {
-        fallback.hidden = true;
-      }
-
-      logo.onerror = () => {
-        logo.hidden = true;
-
-        if (fallback) {
-          fallback.hidden = false;
-        }
-      };
-    } else {
-      logo.hidden = true;
-
-      if (fallback) {
-        fallback.hidden = false;
-      }
-    }
-  }
-
-  async function loadSiteSettings() {
-    if (!db) return;
-
-    try {
-      const { data, error } = await db
-        .from("site_settings")
-        .select("logo_url,store_color")
-        .order("id", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        console.warn("site_settings:", error);
-        setStoreColor(DEFAULT_STORE_COLOR);
-        return;
-      }
-
-      if (!data) {
-        setStoreColor(DEFAULT_STORE_COLOR);
-        return;
-      }
-
-      setStoreColor(
-        data.store_color || DEFAULT_STORE_COLOR
-      );
-
-      applyLogo(data.logo_url || "");
-    } catch (error) {
-      console.warn("loadSiteSettings:", error);
-      setStoreColor(DEFAULT_STORE_COLOR);
-    }
-  }
-
-  function renderProducts() {
-    const list = $("#list");
-
-    if (!list) return;
-
-    const query =
-      ($("#search")?.value || "")
-        .trim()
-        .toLowerCase();
-
-    const filtered = products.filter((product) => {
-      const matchesCategory =
-        !activeCat ||
-        String(product.category || "") === activeCat;
-
-      const name =
-        String(product.name || "").toLowerCase();
-
-      const category =
-        String(product.category || "").toLowerCase();
-
-      const matchesSearch =
-        !query ||
-        name.includes(query) ||
-        category.includes(query);
-
-      return matchesCategory && matchesSearch;
-    });
-
-    if (!filtered.length) {
-      list.innerHTML =
-        '<div class="status">لا توجد منتجات حاليا.</div>';
-      return;
-    }
-
-    list.innerHTML = filtered.map((product) => {
-      const image =
-        product.image_url ||
-        product.image ||
-        "";
-
-      return `
-        <article class="card">
-
-          <div class="card-img">
-
-            ${
-              image
-                ? `
-                  <img
-                    src="${esc(image)}"
-                    alt="${esc(product.name)}"
-                    loading="lazy"
-                    onerror="this.style.display='none'"
-                  >
-                `
-                : `
-                  <div class="empty-image">
-                    🛍️
-                  </div>
-                `
-            }
-
-          </div>
-
-          <div class="card-body">
-
-            <h3>
-              ${esc(product.name || "منتج")}
-            </h3>
-
-            <span>
-              ${esc(product.category || "")}
-            </span>
-
-            <div class="price">
-              ${money(product.price)}
-            </div>
-
-            <button
-              class="add"
-              type="button"
-              data-id="${esc(product.id)}"
-            >
-              أضيفي إلى السلة
-            </button>
-
-          </div>
-
-        </article>
-      `;
-    }).join("");
-
-    list
-      .querySelectorAll("[data-id]")
-      .forEach((button) => {
-        button.addEventListener("click", () => {
-          add(button.dataset.id);
-        });
-      });
-  }
-
-  function renderCart() {
-    const count = cart.reduce(
-      (sum, item) =>
-        sum + (Number(item.qty) || 0),
-      0
-    );
-
-    const countElement = $("#cartCount");
-
-    if (countElement) {
-      countElement.textContent = String(count);
-    }
-
-    const total = cart.reduce(
-      (sum, item) =>
-        sum +
-        (Number(item.price) || 0) *
-        (Number(item.qty) || 0),
-      0
-    );
-
-    const totalElement = $("#total");
-
-    if (totalElement) {
-      totalElement.textContent =
-        new Intl.NumberFormat("ar-DZ").format(total);
-    }
-
-    const items = $("#cartItems");
-
-    if (!items) return;
-
-    if (!cart.length) {
-      items.innerHTML =
-        '<p class="status">السلة فارغة.</p>';
-      return;
-    }
-
-    items.innerHTML = cart.map((item) => `
-      <div class="cart-row">
-
-        <span>
-          <strong>${esc(item.name)}</strong>
-          <br>
-          <small>${money(item.price)}</small>
-        </span>
-
-        <span class="qty">
-
-          <button
-            type="button"
-            data-minus="${esc(item.id)}"
-          >
-            −
-          </button>
-
-          ${item.qty}
-
-          <button
-            type="button"
-            data-plus="${esc(item.id)}"
-          >
-            +
-          </button>
-
-          <button
-            type="button"
-            class="remove"
-            data-remove="${esc(item.id)}"
-          >
-            حذف
-          </button>
-
-        </span>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>حياتي | متجر الأناقة والجمال</title>
+
+  <meta
+    name="description"
+    content="حياتي - متجر الملابس النسائية ومستحضرات التجميل والعطور والأحذية"
+  >
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- الشريط العلوي -->
+  <div class="topbar">
+    <span>🚚 توصيل متاح إلى مختلف الولايات</span>
+    <span>✨ منتجات مختارة بعناية</span>
+    <span>💳 الدفع عند الاستلام</span>
+  </div>
+
+  <!-- الرأس -->
+  <header class="header">
+
+    <button
+      id="mobileSearchBtn"
+      class="mobile-search"
+      type="button"
+      aria-label="البحث"
+    >
+      🔍
+    </button>
+
+    <div class="brand">
+      <div class="brand-logo">
+
+        <img
+          id="siteLogo"
+          data-site-logo
+          src=""
+          alt="شعار حياتي"
+          hidden
+        >
+
+        <div id="brandFallback" class="brand-name">
+          حياتي
+        </div>
 
       </div>
-    `).join("");
-
-    items
-      .querySelectorAll("[data-minus]")
-      .forEach((button) => {
-        button.onclick = () =>
-          change(button.dataset.minus, -1);
-      });
-
-    items
-      .querySelectorAll("[data-plus]")
-      .forEach((button) => {
-        button.onclick = () =>
-          change(button.dataset.plus, 1);
-      });
-
-    items
-      .querySelectorAll("[data-remove]")
-      .forEach((button) => {
-        button.onclick = () => {
-          cart = cart.filter(
-            (item) =>
-              String(item.id) !==
-              String(button.dataset.remove)
-          );
-
-          saveCart();
-        };
-      });
-  }
-
-  function add(id) {
-    const product = products.find(
-      (item) =>
-        String(item.id) === String(id)
-    );
-
-    if (!product) return;
-
-    const existing = cart.find(
-      (item) =>
-        String(item.id) === String(id)
-    );
-
-    if (existing) {
-      existing.qty++;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: Number(product.price) || 0,
-        qty: 1
-      });
-    }
-
-    saveCart();
-    toast("تمت إضافة المنتج إلى السلة ✓");
-  }
-
-  function change(id, delta) {
-    const item = cart.find(
-      (entry) =>
-        String(entry.id) === String(id)
-    );
-
-    if (!item) return;
-
-    item.qty =
-      (Number(item.qty) || 0) + delta;
-
-    if (item.qty < 1) {
-      cart = cart.filter(
-        (entry) =>
-          String(entry.id) !== String(id)
-      );
-    }
-
-    saveCart();
-  }
-
-  function openModal(modal) {
-    if (!modal) return;
-
-    modal.classList.remove("hidden");
-    modal.setAttribute("aria-hidden", "false");
-  }
-
-  function closeModal(modal) {
-    if (!modal) return;
-
-    modal.classList.add("hidden");
-    modal.setAttribute("aria-hidden", "true");
-  }
-
-  async function loadProducts() {
-    if (!db) return;
-
-    try {
-      const { data, error } =
-        await db
-          .from("products")
-          .select("*")
-          .order("created_at", {
-            ascending: false
-          });
-
-      if (error) {
-        console.warn("products:", error);
-        return;
-      }
-
-      if (Array.isArray(data) && data.length) {
-        products = data.map((product) => ({
-          id: product.id,
-          name:
-            product.name ||
-            product.title ||
-            "منتج",
-          category:
-            product.category || "",
-          price:
-            Number(product.price) || 0,
-          image:
-            product.image_url ||
-            product.image ||
-            "",
-          image_url:
-            product.image_url ||
-            product.image ||
-            "",
-          description:
-            product.description || ""
-        }));
-      } else {
-        products = [];
-      }
-    } catch (error) {
-      console.warn("loadProducts:", error);
-    }
-
-    renderProducts();
-  }
-
-  async function connect() {
-    if (
-      !cfg.SUPABASE_URL ||
-      !cfg.SUPABASE_ANON_KEY ||
-      !supabaseLib
-    ) {
-      console.warn(
-        "Supabase configuration missing."
-      );
-
-      setStoreColor(DEFAULT_STORE_COLOR);
-      renderProducts();
-      return;
-    }
-
-    try {
-      db = supabaseLib.createClient(
-        cfg.SUPABASE_URL,
-        cfg.SUPABASE_ANON_KEY
-      );
-
-      window.HAYATI_DB = db;
-
-      await Promise.all([
-        loadSiteSettings(),
-        loadProducts()
-      ]);
-
-      renderProducts();
-    } catch (error) {
-      console.warn("connect:", error);
-      setStoreColor(DEFAULT_STORE_COLOR);
-      renderProducts();
-    }
-  }
-
-  function setupWilayas() {
-    const select = $("#wilaya");
-
-    if (!select) return;
-
-    select.innerHTML =
-      '<option value="">اختاري الولاية</option>' +
-      wilayas
-        .map(
-          (wilaya) =>
-            `<option value="${esc(wilaya)}">${esc(wilaya)}</option>`
-        )
-        .join("");
-  }
-
-  function setupCategories() {
-    document
-      .querySelectorAll(".category")
-      .forEach((button) => {
-        button.onclick = () => {
-
-          activeCat =
-            activeCat === button.dataset.cat
-              ? ""
-              : button.dataset.cat;
-
-          document
-            .querySelectorAll(".category")
-            .forEach((item) => {
-              item.classList.toggle(
-                "active",
-                item === button && !!activeCat
-              );
-            });
-
-          renderProducts();
-
-          $("#products")?.scrollIntoView({
-            behavior: "smooth"
-          });
-        };
-      });
-  }
-
-  function setupSearch() {
-    $("#search")?.addEventListener(
-      "input",
-      renderProducts
-    );
-
-    $("#mobileSearchBtn")?.addEventListener(
-      "click",
-      () => {
-        $("#searchWrap")?.classList.toggle("open");
-        $("#search")?.focus();
-      }
-    );
-  }
-
-  function setupCart() {
-    $("#cartBtn")?.addEventListener(
-      "click",
-      () => openModal($("#cartModal"))
-    );
-
-    $("#closeCart")?.addEventListener(
-      "click",
-      () => closeModal($("#cartModal"))
-    );
-
-    $("#checkoutBtn")?.addEventListener(
-      "click",
-      () => {
-
-        if (!cart.length) {
-          toast(
-            "السلة فارغة، أضيفي منتجا أولا"
-          );
-          return;
-        }
-
-        closeModal($("#cartModal"));
-        openModal($("#checkoutModal"));
-
-        const message = $("#orderMsg");
-
-        if (message) {
-          message.textContent = "";
-        }
-      }
-    );
-
-    $("#closeCheckout")?.addEventListener(
-      "click",
-      () => closeModal($("#checkoutModal"))
-    );
-
-    document
-      .querySelectorAll(".modal, .overlay")
-      .forEach((modal) => {
-        modal.addEventListener(
-          "click",
-          (event) => {
-            if (event.target === modal) {
-              closeModal(modal);
-            }
-          }
-        );
-      });
-  }
-
-  async function submitOrder(event) {
-    event.preventDefault();
-
-    const message = $("#orderMsg");
-
-    if (!message) return;
-
-    message.textContent =
-      "جاري إرسال الطلب...";
-
-    if (!db) {
-      message.textContent =
-        "تعذر الاتصال بقاعدة البيانات.";
-      return;
-    }
-
-    const form = new FormData(event.target);
-
-    const customer_name =
-      String(
-        form.get("customer_name") || ""
-      ).trim();
-
-    const phone =
-      String(form.get("phone") || "").trim();
-
-    const wilaya =
-      String(form.get("wilaya") || "");
-
-    const municipality =
-      String(
-        form.get("municipality") || ""
-      ).trim();
-
-    const pickup =
-      String(
-        form.get("pickup_point") || ""
-      ).trim();
-
-    if (
-      !customer_name ||
-      !phone ||
-      !wilaya ||
-      !municipality ||
-      !pickup
-    ) {
-      message.textContent =
-        "يرجى ملء جميع الخانات المطلوبة.";
-      return;
-    }
-
-    const total = cart.reduce(
-      (sum, item) =>
-        sum +
-        (Number(item.price) || 0) *
-        (Number(item.qty) || 0),
-      0
-    );
-
-    const base = {
-      customer_name,
-      phone,
-      wilaya,
-      municipality,
-      items: cart,
-      total
-    };
-
-    try {
-      const variants = [
-        {
-          ...base,
-          pickup_point: pickup
-        },
-        {
-          ...base,
-          address: pickup
-        },
-        {
-          ...base,
-          pickup_point: pickup,
-          customer_address: pickup
-        },
-        {
-          ...base,
-          address: pickup,
-          customer_address: pickup
-        }
-      ];
-
-      let lastError = null;
-      let success = false;
-
-      for (const payload of variants) {
-        const result =
-          await db
-            .from("orders")
-            .insert(payload);
-
-        if (!result.error) {
-          success = true;
-          break;
-        }
-
-        lastError = result.error;
-
-        const text =
-          String(
-            result.error.message || ""
-          ).toLowerCase();
-
-        if (
-          !/column|schema cache|does not exist|could not find|unknown/i.test(
-            text
-          )
-        ) {
-          break;
-        }
-      }
-
-      if (!success) {
-        throw (
-          lastError ||
-          new Error("تعذر حفظ الطلب")
-        );
-      }
-
-      cart = [];
-      saveCart();
-
-      event.target.reset();
-
-      message.textContent =
-        "تم تأكيد طلبك بنجاح ✓";
-
-      toast("تم تأكيد طلبك بنجاح ✓");
-
-    } catch (error) {
-      console.error("order:", error);
-
-      const detail =
-        String(error?.message || "");
-
-      if (
-        /row-level|permission|policy|rls/i.test(
-          detail
-        )
-      ) {
-        message.textContent =
-          "الطلب جاهز، لكن صلاحية إضافة الطلبات في Supabase تحتاج إلى تفعيل.";
-      } else {
-        message.textContent =
-          "تعذر إرسال الطلب إلى قاعدة البيانات.";
-      }
-    }
-  }
-
-  function setupOrderForm() {
-    $("#orderForm")?.addEventListener(
-      "submit",
-      submitOrder
-    );
-  }
-
-  $("#showAll")?.addEventListener(
-    "click",
-    () => {
-      activeCat = "";
-
-      document
-        .querySelectorAll(".category")
-        .forEach((item) =>
-          item.classList.remove("active")
-        );
-
-      renderProducts();
-
-      $("#products")?.scrollIntoView({
-        behavior: "smooth"
-      });
-    }
-  );
-
-  setupWilayas();
-  setupCategories();
-  setupSearch();
-  setupCart();
-  setupOrderForm();
-
-  renderCart();
-  renderProducts();
-
-  setStoreColor(DEFAULT_STORE_COLOR);
-
-  applyLogo("");
-
-  connect();
-
-})();
+
+      <div class="brand-sub">
+        للألبسة النسائية ومستحضرات التجميل
+      </div>
+    </div>
+
+    <button
+      id="cartBtn"
+      class="cart-btn"
+      type="button"
+    >
+      🛒 السلة
+      <b id="cartCount">0</b>
+    </button>
+
+    <div id="searchWrap" class="search-wrap">
+      <span>⌕</span>
+
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="ابحثي عن منتج..."
+        autocomplete="off"
+      >
+    </div>
+
+  </header>
+
+  <!-- القائمة -->
+  <nav class="navlinks">
+
+    <a
+      href="#home"
+      class="active"
+      data-nav="home"
+    >
+      الرئيسية
+    </a>
+
+    <a
+      href="#products"
+      data-nav="products"
+    >
+      المنتجات
+    </a>
+
+    <a
+      href="#categories"
+      data-nav="categories"
+    >
+      الأقسام
+    </a>
+
+    <a
+      href="#benefits"
+      data-nav="benefits"
+    >
+      لماذا حياتي؟
+    </a>
+
+    <a
+      href="#contact"
+      data-nav="contact"
+    >
+      تواصل معنا
+    </a>
+
+  </nav>
+
+  <main id="home">
+
+    <!-- الواجهة الرئيسية -->
+    <section class="hero">
+
+      <div class="hero-copy">
+
+        <div class="eyebrow">
+          HAYATI STORE
+        </div>
+
+        <h1>
+          أناقتكِ تبدأ
+          <br>
+          مع <em>حياتي</em>
+        </h1>
+
+        <p>
+          اكتشفي تشكيلتنا المختارة من الألبسة النسائية،
+          العطور، مستحضرات التجميل والأحذية.
+        </p>
+
+        <a
+          href="#products"
+          class="primary"
+        >
+          اكتشفي المنتجات
+        </a>
+
+        <div class="hero-features">
+
+          <span>✓ جودة مختارة</span>
+          <span>✓ أسعار مناسبة</span>
+          <span>✓ توصيل موثوق</span>
+
+        </div>
+
+      </div>
+
+      <div class="hero-art">
+
+        <div class="art-circle"></div>
+
+        <div class="art-dress">
+          👗
+        </div>
+
+        <div class="art-bottles">
+          💄 🌸 🧴
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- الأقسام -->
+    <section
+      id="categories"
+      class="section"
+    >
+
+      <div class="section-title">
+
+        <div>
+          <h2>تسوّقي حسب القسم</h2>
+          <span>اختاري القسم الذي يناسبكِ</span>
+        </div>
+
+      </div>
+
+      <div class="categories">
+
+        <button
+          type="button"
+          class="category cat-clothes"
+          data-category="ملابس"
+        >
+
+          <div class="cat-icon">
+            👗
+          </div>
+
+          <strong>
+            ملابس
+          </strong>
+
+          <small>
+            أزياء نسائية أنيقة
+          </small>
+
+          <b>
+            اكتشفي القسم ←
+          </b>
+
+        </button>
+
+        <button
+          type="button"
+          class="category cat-perfume"
+          data-category="عطور"
+        >
+
+          <div class="cat-icon">
+            🌸
+          </div>
+
+          <strong>
+            عطور
+          </strong>
+
+          <small>
+            روائح مميزة
+          </small>
+
+          <b>
+            اكتشفي القسم ←
+          </b>
+
+        </button>
+
+        <button
+          type="button"
+          class="category cat-cosmetics"
+          data-category="مواد التجميل"
+        >
+
+          <div class="cat-icon">
+            💄
+          </div>
+
+          <strong>
+            مواد التجميل
+          </strong>
+
+          <small>
+            لمسة جمالك اليومية
+          </small>
+
+          <b>
+            اكتشفي القسم ←
+          </b>
+
+        </button>
+
+        <button
+          type="button"
+          class="category cat-shoes"
+          data-category="أحذية"
+        >
+
+          <div class="cat-icon">
+            👠
+          </div>
+
+          <strong>
+            أحذية
+          </strong>
+
+          <small>
+            أناقة وراحة
+          </small>
+
+          <b>
+            اكتشفي القسم ←
+          </b>
+
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- المميزات -->
+    <section
+      id="benefits"
+      class="section"
+    >
+
+      <div class="benefits">
+
+        <div>
+          <span>🚚</span>
+          <strong>توصيل</strong>
+          <small>إلى مختلف الولايات</small>
+        </div>
+
+        <div>
+          <span>💳</span>
+          <strong>الدفع عند الاستلام</strong>
+          <small>طريقة دفع سهلة</small>
+        </div>
+
+        <div>
+          <span>✨</span>
+          <strong>منتجات مختارة</strong>
+          <small>جودة نهتم بها</small>
+        </div>
+
+        <div>
+          <span>📞</span>
+          <strong>خدمة العملاء</strong>
+          <small>نحن هنا لمساعدتك</small>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- المنتجات -->
+    <section
+      id="products"
+      class="section"
+    >
+
+      <div class="products-head">
+
+        <div>
+          <h2>منتجاتنا</h2>
+          <span>
+            اختاري ما يناسب ذوقكِ
+          </span>
+        </div>
+
+        <button
+          id="showAll"
+          class="link-btn"
+          type="button"
+        >
+          عرض الكل
+        </button>
+
+      </div>
+
+      <div
+        id="productsGrid"
+        class="products"
+      >
+
+        <div class="status">
+          جاري تحميل المنتجات...
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- العرض -->
+    <section class="promo">
+
+      <div>
+
+        <span>🎁</span>
+
+        <div>
+          <strong>
+            أهلاً بكِ في حياتي
+          </strong>
+
+          <p>
+            اختاري منتجاتكِ وأرسلي طلبكِ بسهولة.
+          </p>
+        </div>
+
+      </div>
+
+      <a
+        href="#products"
+        class="primary"
+      >
+        تسوقي الآن
+      </a>
+
+    </section>
+
+  </main>
+
+  <!-- نافذة السلة -->
+  <div
+    id="cartModal"
+    class="overlay hidden"
+    aria-hidden="true"
+  >
+
+    <div class="modal">
+
+      <button
+        id="closeCart"
+        class="close"
+        type="button"
+        aria-label="إغلاق"
+      >
+        ×
+      </button>
+
+      <h2>
+        سلة المشتريات
+      </h2>
+
+      <div id="cartItems">
+        لا توجد منتجات في السلة.
+      </div>
+
+      <div class="total">
+
+        <span>
+          المجموع
+        </span>
+
+        <strong id="cartTotal">
+          0 دج
+        </strong>
+
+      </div>
+
+      <button
+        id="checkoutBtn"
+        class="primary full"
+        type="button"
+      >
+        إتمام الطلب
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- نافذة إتمام الطلب -->
+  <div
+    id="checkoutModal"
+    class="overlay hidden"
+    aria-hidden="true"
+  >
+
+    <div class="modal checkout-modal">
+
+      <button
+        id="closeCheckout"
+        class="close"
+        type="button"
+        aria-label="إغلاق"
+      >
+        ×
+      </button>
+
+      <h2>
+        معلومات الطلب
+      </h2>
+
+      <p class="hint">
+        يرجى إدخال معلوماتك بشكل صحيح حتى يتم التواصل معك لتأكيد الطلب.
+      </p>
+
+      <form id="orderForm">
+
+        <label>
+          الاسم واللقب
+
+          <input
+            id="customerName"
+            name="customerName"
+            type="text"
+            required
+            autocomplete="name"
+            placeholder="اكتب الاسم واللقب"
+          >
+
+        </label>
+
+        <label>
+          رقم الهاتف
+
+          <input
+            id="customerPhone"
+            name="customerPhone"
+            type="tel"
+            required
+            autocomplete="tel"
+            placeholder="مثال: 0550000000"
+          >
+
+        </label>
+
+        <label>
+          الولاية
+
+          <select
+            id="wilaya"
+            name="wilaya"
+            required
+          >
+
+            <option value="">
+              اختر الولاية
+            </option>
+
+          </select>
+
+        </label>
+
+        <label>
+          البلدية
+
+          <input
+            id="municipality"
+            name="municipality"
+            type="text"
+            required
+            placeholder="اكتب البلدية"
+          >
+
+        </label>
+
+        <label>
+          العنوان
+
+          <input
+            id="address"
+            name="address"
+            type="text"
+            required
+            placeholder="العنوان بالتفصيل"
+          >
+
+        </label>
+
+        <label>
+          نقطة الاستلام
+
+          <input
+            id="pickupPoint"
+            name="pickupPoint"
+            type="text"
+            placeholder="اختياري"
+          >
+
+        </label>
+
+        <div
+          id="orderMsg"
+          aria-live="polite"
+        ></div>
+
+        <button
+          id="submitOrder"
+          class="primary full"
+          type="submit"
+        >
+          إرسال الطلب
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- رسالة قصيرة -->
+  <div
+    id="toast"
+    class="toast"
+    aria-live="polite"
+  ></div>
+
+  <!-- التذييل -->
+  <footer id="contact">
+
+    <div class="footer-brand">
+      حياتي
+      <small>
+        HAYATI
+      </small>
+    </div>
+
+    <p>
+      للألبسة النسائية ومستحضرات التجميل والعطور والأحذية
+    </p>
+
+    <div>
+      © 2026 حياتي - جميع الحقوق محفوظة
+    </div>
+
+  </footer>
+
+  <!-- إعدادات Supabase -->
+  <script src="config.js"></script>
+
+  <!-- منطق المتجر -->
+  <script src="app.js"></script>
+
+</body>
+</html>
