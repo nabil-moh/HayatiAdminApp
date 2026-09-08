@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Capacitor Assets
+        run: npm install --no-save @capacitor/assets
+
       - name: Prepare Admin App
         run: |
           rm -rf www
@@ -45,56 +48,42 @@ jobs:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>حياتي - لوحة المدير</title>
-            <meta http-equiv="refresh" content="0; url=admin.html">
             <script>
-              window.location.replace("admin.html");
+              location.replace("admin.html");
             </script>
           </head>
           <body>
-            <p>جاري فتح لوحة المدير...</p>
-            <a href="admin.html">فتح لوحة المدير</a>
+            جاري فتح لوحة المدير...
           </body>
           </html>
           EOF
 
-      - name: Verify Admin App
+      - name: Verify files
         run: |
-          echo "===== WWW FILES ====="
-          ls -lah www
-
-          echo "===== CHECK REQUIRED FILES ====="
           test -f www/admin.html
           test -f www/admin.css
           test -f www/admin.js
           test -f www/config.js
-          test -f www/index.html
           test -f www/manager-calligraphy.png
           test -f www/hayati-app-icon.png
-
-          echo "===== ALL REQUIRED FILES ARE PRESENT ====="
 
       - name: Create Android project
         run: |
           rm -rf android
           npx cap add android
+
+      - name: Generate Android Icons
+        run: |
+          npx capacitor-assets generate --android
+
+      - name: Sync Capacitor
+        run: |
           npx cap sync android
 
-      - name: Verify Android Assets
+      - name: Verify assets
         run: |
-          echo "===== ANDROID IMAGE FILES ====="
-
-          find android -type f \( \
-            -name "manager-calligraphy.png" -o \
-            -name "hayati-app-icon.png" \
-          \) -print
-
-          echo "===== CHECK MANAGER IMAGE ====="
           test -n "$(find android -type f -name 'manager-calligraphy.png' -print -quit)"
-
-          echo "===== CHECK APP IMAGE ====="
-          test -n "$(find android -type f -name 'hayati-app-icon.png' -print -quit)"
-
-          echo "===== BOTH IMAGES REACHED ANDROID ====="
+          test -n "$(find android/app/src/main/res -type f -name 'ic_launcher.png' -print -quit)"
 
       - name: Force Gradle to Java 21
         working-directory: android
@@ -105,6 +94,11 @@ jobs:
       - name: Build Admin APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
+
+      - name: Verify APK
+        run: |
+          test -f android/app/build/outputs/apk/debug/app-debug.apk
+          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload Admin APK
         uses: actions/upload-artifact@v4
