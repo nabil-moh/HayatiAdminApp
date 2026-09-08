@@ -42,6 +42,15 @@ jobs:
           cp admin.html www/
           cp admin.css www/
           cp admin.js www/
+          cp manager-calligraphy.png www/
+          cp hayati-app-icon.png www/
+
+      - name: Verify web files
+        run: |
+          echo "Checking web files:"
+          ls -lah www
+          test -f www/manager-calligraphy.png
+          test -f www/hayati-app-icon.png
 
       - name: Create Android project
         run: |
