@@ -8,7 +8,7 @@
 
   <meta
     name="description"
-    content="حياتي - متجر الملابس النسائية ومستحضرات التجميل والعطور والأحذية"
+    content="حياتي - متجر الألبسة النسائية ومستحضرات التجميل والعطور والأحذية"
   >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
 
   <!-- الشريط العلوي -->
   <div class="topbar">
-    <span>🚚 توصيل متاح إلى مختلف الولايات</span>
+    <span>🚚 توصيل إلى مختلف الولايات</span>
     <span>✨ منتجات مختارة بعناية</span>
     <span>💳 الدفع عند الاستلام</span>
   </div>
@@ -38,23 +38,26 @@
       id="mobileSearchBtn"
       class="mobile-search"
       type="button"
-      aria-label="البحث"
+      aria-label="فتح البحث"
     >
       🔍
     </button>
 
     <div class="brand">
+
       <div class="brand-logo">
 
         <img
           id="siteLogo"
-          data-site-logo
           src=""
           alt="شعار حياتي"
           hidden
         >
 
-        <div id="brandFallback" class="brand-name">
+        <div
+          id="brandFallback"
+          class="brand-name"
+        >
           حياتي
         </div>
 
@@ -63,6 +66,7 @@
       <div class="brand-sub">
         للألبسة النسائية ومستحضرات التجميل
       </div>
+
     </div>
 
     <button
@@ -74,15 +78,20 @@
       <b id="cartCount">0</b>
     </button>
 
-    <div id="searchWrap" class="search-wrap">
+    <div
+      id="searchWrap"
+      class="search-wrap"
+    >
+
       <span>⌕</span>
 
       <input
-        id="searchInput"
+        id="search"
         type="search"
         placeholder="ابحثي عن منتج..."
         autocomplete="off"
       >
+
     </div>
 
   </header>
@@ -93,36 +102,23 @@
     <a
       href="#home"
       class="active"
-      data-nav="home"
     >
       الرئيسية
     </a>
 
-    <a
-      href="#products"
-      data-nav="products"
-    >
+    <a href="#products">
       المنتجات
     </a>
 
-    <a
-      href="#categories"
-      data-nav="categories"
-    >
+    <a href="#categories">
       الأقسام
     </a>
 
-    <a
-      href="#benefits"
-      data-nav="benefits"
-    >
+    <a href="#benefits">
       لماذا حياتي؟
     </a>
 
-    <a
-      href="#contact"
-      data-nav="contact"
-    >
+    <a href="#contact">
       تواصل معنا
     </a>
 
@@ -158,11 +154,9 @@
         </a>
 
         <div class="hero-features">
-
           <span>✓ جودة مختارة</span>
           <span>✓ أسعار مناسبة</span>
           <span>✓ توصيل موثوق</span>
-
         </div>
 
       </div>
@@ -203,16 +197,12 @@
         <button
           type="button"
           class="category cat-clothes"
-          data-category="ملابس"
+          data-cat="ملابس"
         >
 
-          <div class="cat-icon">
-            👗
-          </div>
+          <div class="cat-icon">👗</div>
 
-          <strong>
-            ملابس
-          </strong>
+          <strong>ملابس</strong>
 
           <small>
             أزياء نسائية أنيقة
@@ -227,16 +217,12 @@
         <button
           type="button"
           class="category cat-perfume"
-          data-category="عطور"
+          data-cat="عطور"
         >
 
-          <div class="cat-icon">
-            🌸
-          </div>
+          <div class="cat-icon">🌸</div>
 
-          <strong>
-            عطور
-          </strong>
+          <strong>عطور</strong>
 
           <small>
             روائح مميزة
@@ -251,16 +237,12 @@
         <button
           type="button"
           class="category cat-cosmetics"
-          data-category="مواد التجميل"
+          data-cat="مواد التجميل"
         >
 
-          <div class="cat-icon">
-            💄
-          </div>
+          <div class="cat-icon">💄</div>
 
-          <strong>
-            مواد التجميل
-          </strong>
+          <strong>مواد التجميل</strong>
 
           <small>
             لمسة جمالك اليومية
@@ -275,16 +257,12 @@
         <button
           type="button"
           class="category cat-shoes"
-          data-category="أحذية"
+          data-cat="أحذية"
         >
 
-          <div class="cat-icon">
-            👠
-          </div>
+          <div class="cat-icon">👠</div>
 
-          <strong>
-            أحذية
-          </strong>
+          <strong>أحذية</strong>
 
           <small>
             أناقة وراحة
@@ -346,6 +324,7 @@
 
         <div>
           <h2>منتجاتنا</h2>
+
           <span>
             اختاري ما يناسب ذوقكِ
           </span>
@@ -361,8 +340,9 @@
 
       </div>
 
+      <!-- مهم: app.js الحالي يبحث عن #list -->
       <div
-        id="productsGrid"
+        id="list"
         class="products"
       >
 
@@ -382,6 +362,7 @@
         <span>🎁</span>
 
         <div>
+
           <strong>
             أهلاً بكِ في حياتي
           </strong>
@@ -389,6 +370,7 @@
           <p>
             اختاري منتجاتكِ وأرسلي طلبكِ بسهولة.
           </p>
+
         </div>
 
       </div>
@@ -404,7 +386,7 @@
 
   </main>
 
-  <!-- نافذة السلة -->
+  <!-- السلة -->
   <div
     id="cartModal"
     class="overlay hidden"
@@ -427,7 +409,9 @@
       </h2>
 
       <div id="cartItems">
-        لا توجد منتجات في السلة.
+        <p class="status">
+          السلة فارغة.
+        </p>
       </div>
 
       <div class="total">
@@ -436,8 +420,9 @@
           المجموع
         </span>
 
-        <strong id="cartTotal">
-          0 دج
+        <!-- مهم: app.js الحالي يبحث عن #total -->
+        <strong id="total">
+          0
         </strong>
 
       </div>
@@ -454,7 +439,7 @@
 
   </div>
 
-  <!-- نافذة إتمام الطلب -->
+  <!-- إتمام الطلب -->
   <div
     id="checkoutModal"
     class="overlay hidden"
@@ -486,9 +471,8 @@
           الاسم واللقب
 
           <input
-            id="customerName"
-            name="customerName"
             type="text"
+            name="customer_name"
             required
             autocomplete="name"
             placeholder="اكتب الاسم واللقب"
@@ -500,9 +484,8 @@
           رقم الهاتف
 
           <input
-            id="customerPhone"
-            name="customerPhone"
             type="tel"
+            name="phone"
             required
             autocomplete="tel"
             placeholder="مثال: 0550000000"
@@ -520,7 +503,7 @@
           >
 
             <option value="">
-              اختر الولاية
+              اختاري الولاية
             </option>
 
           </select>
@@ -531,24 +514,10 @@
           البلدية
 
           <input
-            id="municipality"
-            name="municipality"
             type="text"
+            name="municipality"
             required
             placeholder="اكتب البلدية"
-          >
-
-        </label>
-
-        <label>
-          العنوان
-
-          <input
-            id="address"
-            name="address"
-            type="text"
-            required
-            placeholder="العنوان بالتفصيل"
           >
 
         </label>
@@ -557,10 +526,10 @@
           نقطة الاستلام
 
           <input
-            id="pickupPoint"
-            name="pickupPoint"
             type="text"
-            placeholder="اختياري"
+            name="pickup_point"
+            required
+            placeholder="اكتب نقطة الاستلام أو العنوان"
           >
 
         </label>
@@ -584,7 +553,7 @@
 
   </div>
 
-  <!-- رسالة قصيرة -->
+  <!-- الرسائل -->
   <div
     id="toast"
     class="toast"
@@ -596,9 +565,7 @@
 
     <div class="footer-brand">
       حياتي
-      <small>
-        HAYATI
-      </small>
+      <small>HAYATI</small>
     </div>
 
     <p>
