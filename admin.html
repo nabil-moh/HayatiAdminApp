@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>حياتي | لوحة الإدارة</title>
+
   <link rel="stylesheet" href="admin.css">
+  <link rel="icon" type="image/png" href="hayati-app-icon.png">
 
   <style>
     .manager-calligraphy {
@@ -31,14 +33,32 @@
       >
     </h2>
 
-    <input id="email" type="email" placeholder="البريد الإلكتروني">
+    <input
+      id="email"
+      type="email"
+      placeholder="البريد الإلكتروني"
+    >
 
     <div class="password-wrap">
-      <input id="password" type="password" placeholder="كلمة المرور">
-      <button id="passwordToggle" type="button" aria-label="إظهار كلمة المرور">👁️</button>
+      <input
+        id="password"
+        type="password"
+        placeholder="كلمة المرور"
+      >
+
+      <button
+        id="passwordToggle"
+        type="button"
+        aria-label="إظهار كلمة المرور"
+      >
+        👁️
+      </button>
     </div>
 
-    <button id="loginBtn" class="primary">دخول</button>
+    <button id="loginBtn" class="primary">
+      دخول
+    </button>
+
     <p id="loginMsg"></p>
   </div>
 </div>
@@ -46,19 +66,42 @@
 <div id="app" class="hidden">
 
   <header class="topbar">
-    <button id="menuBtn" class="icon-btn">☰</button>
-    <div class="brand">حياتي Hayati</div>
+    <button id="menuBtn" class="icon-btn">
+      ☰
+    </button>
+
+    <div class="brand">
+      حياتي Hayati
+    </div>
+
     <div class="notification" id="notificationBtn">
-      🔔 <span id="notificationCount">0</span>
+      🔔
+      <span id="notificationCount">0</span>
     </div>
   </header>
 
   <aside id="sideMenu" class="side-menu">
-    <button data-section="home">🏠 الرئيسية</button>
-    <button data-section="orders">📦 الطلبات</button>
-    <button data-section="products">🛍️ منتجاتي</button>
-    <button data-section="settings">⚙️ الإعدادات</button>
-    <button id="logoutBtn">🚪 خروج</button>
+
+    <button data-section="home">
+      🏠 الرئيسية
+    </button>
+
+    <button data-section="orders">
+      📦 الطلبات
+    </button>
+
+    <button data-section="products">
+      🛍️ منتجاتي
+    </button>
+
+    <button data-section="settings">
+      ⚙️ الإعدادات
+    </button>
+
+    <button id="logoutBtn">
+      🚪 خروج
+    </button>
+
   </aside>
 
   <main class="content">
@@ -73,9 +116,12 @@
         >
       </div>
 
-      <h2>الرئيسية</h2>
+      <h2>
+        الرئيسية
+      </h2>
 
       <div class="stats">
+
         <div class="stat">
           <b id="ordersStat">0</b>
           <span>الطلبات</span>
@@ -85,16 +131,27 @@
           <b id="productsStat">0</b>
           <span>المنتجات</span>
         </div>
+
       </div>
 
-      <button id="homeRefresh" class="secondary">🔄 تحديث</button>
+      <button id="homeRefresh" class="secondary">
+        🔄 تحديث
+      </button>
+
     </section>
 
     <section id="orders" class="section">
 
       <div class="section-head">
-        <h2>📦 الطلبات</h2>
-        <button id="ordersRefresh" class="secondary">🔄 تحديث</button>
+
+        <h2>
+          📦 الطلبات
+        </h2>
+
+        <button id="ordersRefresh" class="secondary">
+          🔄 تحديث
+        </button>
+
       </div>
 
       <div id="ordersList"></div>
@@ -106,15 +163,21 @@
       <div class="section-head">
 
         <div>
-          <h2>🛍️ منتجاتي</h2>
+
+          <h2>
+            🛍️ منتجاتي
+          </h2>
 
           <p class="muted">
             هذه القائمة تُقرأ مباشرة من جدول المنتجات في Supabase،
             أي أنها تمثل المنتجات الموجودة فعليًا في المتجر.
           </p>
+
         </div>
 
-        <button id="productsRefresh" class="secondary">🔄 تحديث</button>
+        <button id="productsRefresh" class="secondary">
+          🔄 تحديث
+        </button>
 
       </div>
 
@@ -124,13 +187,21 @@
 
     <section id="settings" class="section">
 
-      <h2>⚙️ الإعدادات</h2>
+      <h2>
+        ⚙️ الإعدادات
+      </h2>
 
       <div class="settings-card">
 
-        <label>شعار المتجر</label>
+        <label>
+          شعار المتجر
+        </label>
 
-        <input id="logoFile" type="file" accept="image/*">
+        <input
+          id="logoFile"
+          type="file"
+          accept="image/*"
+        >
 
         <img
           id="logoPreview"
@@ -138,11 +209,16 @@
           alt="شعار المتجر"
         >
 
-        <button id="saveLogo" class="primary">
+        <button
+          id="saveLogo"
+          class="primary"
+        >
           حفظ الشعار
         </button>
 
-        <label>لون تطبيق المدير</label>
+        <label>
+          لون تطبيق المدير
+        </label>
 
         <input
           id="adminColor"
@@ -150,7 +226,9 @@
           value="#7c3aed"
         >
 
-        <label>لون المتجر</label>
+        <label>
+          لون المتجر
+        </label>
 
         <input
           id="storeColor"
@@ -158,7 +236,10 @@
           value="#7c3aed"
         >
 
-        <button id="saveColors" class="primary">
+        <button
+          id="saveColors"
+          class="primary"
+        >
           حفظ الألوان
         </button>
 
@@ -176,13 +257,23 @@
 
   <div class="modal-box">
 
-    <button id="closeOrderModal" class="close">×</button>
+    <button
+      id="closeOrderModal"
+      class="close"
+    >
+      ×
+    </button>
 
-    <h2>تفاصيل الطلب</h2>
+    <h2>
+      تفاصيل الطلب
+    </h2>
 
     <div id="orderDetails"></div>
 
-    <button id="deleteOrderBtn" class="danger">
+    <button
+      id="deleteOrderBtn"
+      class="danger"
+    >
       🗑️ حذف الطلب
     </button>
 
@@ -194,15 +285,31 @@
 
   <div class="modal-box">
 
-    <button id="closeProductModal" class="close">×</button>
+    <button
+      id="closeProductModal"
+      class="close"
+    >
+      ×
+    </button>
 
-    <h2 id="productModalTitle">تعديل المنتج</h2>
+    <h2 id="productModalTitle">
+      تعديل المنتج
+    </h2>
 
-    <input id="productId" type="hidden">
+    <input
+      id="productId"
+      type="hidden"
+    >
 
-    <input id="productName" placeholder="اسم المنتج">
+    <input
+      id="productName"
+      placeholder="اسم المنتج"
+    >
 
-    <input id="productCategory" placeholder="الفئة">
+    <input
+      id="productCategory"
+      placeholder="الفئة"
+    >
 
     <input
       id="productPrice"
@@ -232,7 +339,10 @@
       placeholder="الوصف"
     ></textarea>
 
-    <button id="saveProduct" class="primary">
+    <button
+      id="saveProduct"
+      class="primary"
+    >
       حفظ
     </button>
 
