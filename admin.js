@@ -1,28 +1,16 @@
 (() => {
   "use strict";
 
-  /* =========================================================
-     HAYATI ADMIN
-     النسخة المصححة والمتوافقة مع admin.html
-     ========================================================= */
-
   const cfg = window.HAYATI_CONFIG || {};
   const sb = window.supabase;
 
   const $ = (id) => document.getElementById(id);
 
-  /* =========================================================
-     التحقق من Supabase
-     ========================================================= */
-
   if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || !sb) {
     const msg = $("loginMsg");
-
     if (msg) {
-      msg.textContent =
-        "إعدادات Supabase غير موجودة أو لم يتم تحميلها.";
+      msg.textContent = "إعدادات Supabase غير موجودة أو لم يتم تحميلها.";
     }
-
     return;
   }
 
@@ -30,10 +18,6 @@
     cfg.SUPABASE_URL,
     cfg.SUPABASE_ANON_KEY
   );
-
-  /* =========================================================
-     الحالة
-     ========================================================= */
 
   const state = {
     orders: [],
@@ -46,17 +30,9 @@
   const DEFAULT_ADMIN_COLOR = "#7c3aed";
   const DEFAULT_STORE_COLOR = "#d9a5b8";
 
-  /* =========================================================
-     أدوات عامة
-     ========================================================= */
-
   function setCssVariable(name, value) {
     if (!value) return;
-
-    document.documentElement.style.setProperty(
-      name,
-      value
-    );
+    document.documentElement.style.setProperty(name, value);
   }
 
   function setAdminColor(color) {
@@ -80,10 +56,6 @@
     setCssVariable("--store-color-primary", value);
   }
 
-  /*
-   * مهم:
-   * هذه الدالة كانت تحتوي على خطأ نحوي في الملف القديم.
-   */
   function esc(value) {
     return String(value ?? "").replace(
       /[&<>"']/g,
@@ -110,7 +82,6 @@
 
   function showMessage(id, text) {
     const element = $(id);
-
     if (element) {
       element.textContent = text || "";
     }
@@ -124,16 +95,10 @@
     }
   }
 
-  /* =========================================================
-     الأقسام
-     ========================================================= */
-
   function showSection(name) {
-    document
-      .querySelectorAll(".section")
-      .forEach((section) => {
-        section.classList.remove("active");
-      });
+    document.querySelectorAll(".section").forEach((section) => {
+      section.classList.remove("active");
+    });
 
     const target = $(name);
 
@@ -141,16 +106,8 @@
       target.classList.add("active");
     }
 
-    const menu = $("sideMenu");
-
-    if (menu) {
-      menu.classList.remove("open");
-    }
+    $("sideMenu")?.classList.remove("open");
   }
-
-  /* =========================================================
-     الإعدادات
-     ========================================================= */
 
   function applySettings(data) {
     if (!data) return;
@@ -185,17 +142,11 @@
       preview.hidden = false;
     }
 
-    /*
-     * يدعم أي صورة في الصفحة تحمل data-site-logo
-     * إذا تمت إضافتها مستقبلًا.
-     */
-    document
-      .querySelectorAll("[data-site-logo]")
-      .forEach((img) => {
-        if (data.logo_url) {
-          img.src = data.logo_url;
-        }
-      });
+    document.querySelectorAll("[data-site-logo]").forEach((img) => {
+      if (data.logo_url) {
+        img.src = data.logo_url;
+      }
+    });
   }
 
   async function getSettingsRow() {
@@ -207,11 +158,7 @@
       .maybeSingle();
 
     if (error) {
-      console.error(
-        "getSettingsRow:",
-        error
-      );
-
+      console.error("getSettingsRow:", error);
       return null;
     }
 
@@ -232,18 +179,14 @@
         .maybeSingle();
 
       if (error) {
-        console.error(
-          "loadSettings:",
-          error
-        );
+        console.error("loadSettings:", error);
 
         setAdminColor(DEFAULT_ADMIN_COLOR);
         setStoreColor(DEFAULT_STORE_COLOR);
 
         showMessage(
           "settingsMsg",
-          "تعذر تحميل الإعدادات: " +
-            error.message
+          "تعذر تحميل الإعدادات: " + error.message
         );
 
         return;
@@ -273,10 +216,6 @@
     }
   }
 
-  /* =========================================================
-     حفظ الألوان
-     ========================================================= */
-
   async function saveColors() {
     const adminInput = $("adminColor");
     const storeInput = $("storeColor");
@@ -287,14 +226,8 @@
     const storeColor =
       storeInput?.value || DEFAULT_STORE_COLOR;
 
-    showMessage(
-      "settingsMsg",
-      "جارٍ حفظ الألوان..."
-    );
+    showMessage("settingsMsg", "جارٍ حفظ الألوان...");
 
-    /*
-     * تطبيق فوري على لوحة المدير.
-     */
     setAdminColor(adminColor);
     setStoreColor(storeColor);
 
@@ -328,39 +261,29 @@
       }
 
       if (result.error) {
-        console.error(
-          "saveColors:",
-          result.error
-        );
+        console.error("saveColors:", result.error);
 
         showMessage(
           "settingsMsg",
-          "❌ تعذر حفظ الألوان: " +
-            result.error.message
+          "❌ تعذر حفظ الألوان: " + result.error.message
         );
 
         return;
       }
 
-      if (result.data) {
-        state.settings = result.data;
-      } else {
-        state.settings = {
+      state.settings =
+        result.data || {
           ...(state.settings || {}),
           admin_color: adminColor,
           store_color: storeColor
         };
-      }
 
       showMessage(
         "settingsMsg",
         "✅ تم حفظ الألوان بنجاح."
       );
     } catch (error) {
-      console.error(
-        "saveColors exception:",
-        error
-      );
+      console.error("saveColors exception:", error);
 
       showMessage(
         "settingsMsg",
@@ -369,76 +292,61 @@
     }
   }
 
-  /* =========================================================
-     الشعار - المعاينة
-     ========================================================= */
-
   function setupLogoPreview() {
     const input = $("logoFile");
 
     if (!input) return;
 
-    input.addEventListener(
-      "change",
-      (event) => {
-        const file =
-          event.target.files?.[0];
+    input.addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      const preview = $("logoPreview");
 
-        const preview = $("logoPreview");
+      if (!file) return;
 
-        if (!file) return;
-
-        if (!file.type.startsWith("image/")) {
-          showMessage(
-            "settingsMsg",
-            "الرجاء اختيار صورة صحيحة."
-          );
-
-          input.value = "";
-          return;
-        }
-
-        if (file.size > 10 * 1024 * 1024) {
-          showMessage(
-            "settingsMsg",
-            "حجم الصورة كبير جدًا. الحد الأقصى 10MB."
-          );
-
-          input.value = "";
-          return;
-        }
-
-        if (preview) {
-          if (preview.dataset.objectUrl) {
-            URL.revokeObjectURL(
-              preview.dataset.objectUrl
-            );
-          }
-
-          const url =
-            URL.createObjectURL(file);
-
-          preview.src = url;
-          preview.hidden = false;
-          preview.dataset.objectUrl = url;
-        }
-
+      if (!file.type.startsWith("image/")) {
         showMessage(
           "settingsMsg",
-          "تم اختيار الشعار. اضغط حفظ الشعار."
+          "الرجاء اختيار صورة صحيحة."
         );
-      }
-    );
-  }
 
-  /* =========================================================
-     حفظ الشعار
-     ========================================================= */
+        input.value = "";
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        showMessage(
+          "settingsMsg",
+          "حجم الصورة كبير جدًا. الحد الأقصى 10MB."
+        );
+
+        input.value = "";
+        return;
+      }
+
+      if (preview) {
+        if (preview.dataset.objectUrl) {
+          URL.revokeObjectURL(
+            preview.dataset.objectUrl
+          );
+        }
+
+        const url = URL.createObjectURL(file);
+
+        preview.src = url;
+        preview.hidden = false;
+        preview.dataset.objectUrl = url;
+      }
+
+      showMessage(
+        "settingsMsg",
+        "تم اختيار الشعار. اضغط حفظ الشعار."
+      );
+    });
+  }
 
   async function saveLogo() {
     const input = $("logoFile");
     const file = input?.files?.[0];
-
     const preview = $("logoPreview");
 
     if (!file) {
@@ -476,10 +384,7 @@
     try {
       const originalExtension =
         file.name.includes(".")
-          ? file.name
-              .split(".")
-              .pop()
-              .toLowerCase()
+          ? file.name.split(".").pop().toLowerCase()
           : "jpg";
 
       const extension =
@@ -492,25 +397,18 @@
         "logo-" +
         Date.now() +
         "-" +
-        Math.random()
-          .toString(36)
-          .slice(2, 8) +
+        Math.random().toString(36).slice(2, 8) +
         "." +
         extension;
 
       const { error: uploadError } =
         await db.storage
           .from("hayati-assets")
-          .upload(
-            path,
-            file,
-            {
-              upsert: false,
-              contentType:
-                file.type || "image/jpeg",
-              cacheControl: "3600"
-            }
-          );
+          .upload(path, file, {
+            upsert: false,
+            contentType: file.type || "image/jpeg",
+            cacheControl: "3600"
+          });
 
       if (uploadError) {
         console.error(
@@ -549,8 +447,7 @@
         "جارٍ حفظ الشعار..."
       );
 
-      const current =
-        await getSettingsRow();
+      const current = await getSettingsRow();
 
       let result;
 
@@ -559,8 +456,7 @@
           .from("site_settings")
           .update({
             logo_url: logoUrl,
-            updated_at:
-              new Date().toISOString()
+            updated_at: new Date().toISOString()
           })
           .eq("id", current.id)
           .select()
@@ -569,13 +465,10 @@
         result = await db
           .from("site_settings")
           .insert({
-            admin_color:
-              DEFAULT_ADMIN_COLOR,
-            store_color:
-              DEFAULT_STORE_COLOR,
+            admin_color: DEFAULT_ADMIN_COLOR,
+            store_color: DEFAULT_STORE_COLOR,
             logo_url: logoUrl,
-            updated_at:
-              new Date().toISOString()
+            updated_at: new Date().toISOString()
           })
           .select()
           .maybeSingle();
@@ -596,15 +489,11 @@
         return;
       }
 
-      if (result.data) {
-        state.settings =
-          result.data;
-      } else {
-        state.settings = {
+      state.settings =
+        result.data || {
           ...(state.settings || {}),
           logo_url: logoUrl
         };
-      }
 
       if (preview) {
         preview.src = logoUrl;
@@ -612,11 +501,9 @@
         delete preview.dataset.objectUrl;
       }
 
-      document
-        .querySelectorAll("[data-site-logo]")
-        .forEach((img) => {
-          img.src = logoUrl;
-        });
+      document.querySelectorAll("[data-site-logo]").forEach((img) => {
+        img.src = logoUrl;
+      });
 
       input.value = "";
 
@@ -636,10 +523,6 @@
       );
     }
   }
-
-  /* =========================================================
-     الطلبات
-     ========================================================= */
 
   async function loadOrders() {
     const box = $("ordersList");
@@ -731,7 +614,9 @@
                 ${esc(
                   fmtDate(order.created_at)
                 )}
+
                 —
+
                 الإجمالي:
                 ${esc(
                   String(
@@ -940,10 +825,6 @@
     await loadOrders();
   }
 
-  /* =========================================================
-     المنتجات
-     ========================================================= */
-
   async function loadProducts() {
     const box =
       $("productsList");
@@ -1060,12 +941,9 @@
                   )}
 
                   ${
-                    product.old_price !==
-                      null &&
-                    product.old_price !==
-                      undefined &&
-                    product.old_price !==
-                      ""
+                    product.old_price !== null &&
+                    product.old_price !== undefined &&
+                    product.old_price !== ""
                       ? `
                         — القديم:
                         ${esc(
@@ -1289,10 +1167,6 @@
     await loadProducts();
   }
 
-  /* =========================================================
-     تسجيل الدخول
-     ========================================================= */
-
   let applicationLoading = false;
 
   async function showApplication() {
@@ -1363,10 +1237,6 @@
         return;
       }
 
-      /*
-       * لا نستدعي showApplication هنا
-       * لأن SIGNED_IN سيقوم بذلك.
-       */
       showMessage(
         "loginMsg",
         "تم تسجيل الدخول..."
@@ -1409,20 +1279,12 @@
     }
   }
 
-  /* =========================================================
-     أحداث تسجيل الدخول
-     ========================================================= */
-
   db.auth.onAuthStateChange(
     (event, session) => {
       if (
         event === "SIGNED_IN" &&
         session
       ) {
-        /*
-         * تأخير بسيط يمنع تنفيذ عمليات Supabase
-         * داخل callback الخاص بالمصادقة مباشرة.
-         */
         setTimeout(() => {
           showApplication();
         }, 0);
@@ -1462,10 +1324,6 @@
       }
     );
 
-  /* =========================================================
-     تسجيل الخروج
-     ========================================================= */
-
   $("logoutBtn")
     ?.addEventListener(
       "click",
@@ -1474,10 +1332,6 @@
         location.reload();
       }
     );
-
-  /* =========================================================
-     القائمة
-     ========================================================= */
 
   $("menuBtn")
     ?.addEventListener(
@@ -1505,10 +1359,6 @@
       );
     });
 
-  /* =========================================================
-     الإشعارات
-     ========================================================= */
-
   $("notificationBtn")
     ?.addEventListener(
       "click",
@@ -1516,10 +1366,6 @@
         showSection("orders");
       }
     );
-
-  /* =========================================================
-     التحديث
-     ========================================================= */
 
   $("ordersRefresh")
     ?.addEventListener(
@@ -1545,10 +1391,6 @@
       }
     );
 
-  /* =========================================================
-     نافذة الطلب
-     ========================================================= */
-
   $("deleteOrderBtn")
     ?.addEventListener(
       "click",
@@ -1566,10 +1408,6 @@
       }
     );
 
-  /* =========================================================
-     نافذة المنتج
-     ========================================================= */
-
   $("closeProductModal")
     ?.addEventListener(
       "click",
@@ -1586,10 +1424,6 @@
       "click",
       saveProduct
     );
-
-  /* =========================================================
-     الإعدادات
-     ========================================================= */
 
   $("saveColors")
     ?.addEventListener(
@@ -1623,10 +1457,6 @@
       }
     );
 
-  /* =========================================================
-     إغلاق النوافذ عند الضغط خارجها
-     ========================================================= */
-
   window.addEventListener(
     "click",
     (event) => {
@@ -1656,10 +1486,6 @@
     }
   );
 
-  /* =========================================================
-     تحديث الطلبات مباشرة من Supabase
-     ========================================================= */
-
   db.channel("hayati-orders")
     .on(
       "postgres_changes",
@@ -1674,14 +1500,6 @@
     )
     .subscribe();
 
-  /* =========================================================
-     التشغيل
-     ========================================================= */
-
-  /*
-   * تطبيق القيم الافتراضية فورًا حتى لا تظهر
-   * الصفحة بدون ألوان أثناء تحميل Supabase.
-   */
   setAdminColor(
     DEFAULT_ADMIN_COLOR
   );
@@ -1693,5 +1511,4 @@
   setupLogoPreview();
 
   restoreSession();
-
 })();
