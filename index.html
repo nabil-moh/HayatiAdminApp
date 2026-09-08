@@ -3,137 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>حياتي | متجر الأناقة والجمال</title>
-
-  <meta
-    name="description"
-    content="حياتي - متجر الألبسة النسائية ومستحضرات التجميل والعطور والأحذية"
-  >
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&display=swap"
-    rel="stylesheet"
-  >
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- الشريط العلوي -->
-  <div class="topbar">
-    <span>🚚 توصيل إلى مختلف الولايات</span>
-    <span>✨ منتجات مختارة بعناية</span>
-    <span>💳 الدفع عند الاستلام</span>
-  </div>
-
-  <!-- الرأس -->
-  <header class="header">
-
-    <button
-      id="mobileSearchBtn"
-      class="mobile-search"
-      type="button"
-      aria-label="فتح البحث"
-    >
-      🔍
-    </button>
-
+  <header class="topbar">
     <div class="brand">
-
       <div class="brand-logo">
-
         <img
           id="siteLogo"
           src=""
           alt="شعار حياتي"
           hidden
         >
-
-        <div
-          id="brandFallback"
-          class="brand-name"
-        >
-          حياتي
-        </div>
-
+        <div id="brandFallback" class="brand-name">حياتي</div>
       </div>
 
       <div class="brand-sub">
         للألبسة النسائية ومستحضرات التجميل
       </div>
-
     </div>
 
-    <button
-      id="cartBtn"
-      class="cart-btn"
-      type="button"
-    >
-      🛒 السلة
-      <b id="cartCount">0</b>
-    </button>
-
-    <div
-      id="searchWrap"
-      class="search-wrap"
-    >
-
+    <div class="search-wrap">
       <span>⌕</span>
-
       <input
         id="search"
         type="search"
         placeholder="ابحثي عن منتج..."
         autocomplete="off"
       >
-
     </div>
 
+    <button id="cartBtn" class="cart-btn" type="button">
+      🛒 السلة
+      <b id="cartCount">0</b>
+    </button>
   </header>
 
-  <!-- القائمة -->
   <nav class="navlinks">
-
-    <a
-      href="#home"
-      class="active"
-    >
-      الرئيسية
-    </a>
-
-    <a href="#products">
-      المنتجات
-    </a>
-
-    <a href="#categories">
-      الأقسام
-    </a>
-
-    <a href="#benefits">
-      لماذا حياتي؟
-    </a>
-
-    <a href="#contact">
-      تواصل معنا
-    </a>
-
+    <a href="#home">الرئيسية</a>
+    <a href="#products">المنتجات</a>
+    <a href="#categories">الأقسام</a>
+    <a href="#benefits">لماذا حياتي؟</a>
+    <a href="#contact">تواصل معنا</a>
   </nav>
 
   <main id="home">
 
-    <!-- الواجهة الرئيسية -->
     <section class="hero">
-
       <div class="hero-copy">
 
-        <div class="eyebrow">
-          HAYATI STORE
-        </div>
+        <div class="eyebrow">HAYATI STORE</div>
 
         <h1>
           أناقتكِ تبدأ
@@ -146,10 +69,7 @@
           العطور، مستحضرات التجميل والأحذية.
         </p>
 
-        <a
-          href="#products"
-          class="primary"
-        >
+        <a href="#products" class="primary">
           اكتشفي المنتجات
         </a>
 
@@ -162,127 +82,71 @@
       </div>
 
       <div class="hero-art">
-
         <div class="art-circle"></div>
-
-        <div class="art-dress">
-          👗
-        </div>
-
-        <div class="art-bottles">
-          💄 🌸 🧴
-        </div>
-
+        <div class="art-dress">👗</div>
+        <div class="art-bottles">💄 🌸 🧴</div>
       </div>
-
     </section>
 
-    <!-- الأقسام -->
-    <section
-      id="categories"
-      class="section"
-    >
+    <section id="categories" class="section">
 
       <div class="section-title">
-
         <div>
           <h2>تسوّقي حسب القسم</h2>
           <span>اختاري القسم الذي يناسبكِ</span>
         </div>
-
       </div>
 
       <div class="categories">
 
         <button
+          class="category"
           type="button"
-          class="category cat-clothes"
           data-cat="ملابس"
         >
-
           <div class="cat-icon">👗</div>
-
           <strong>ملابس</strong>
-
-          <small>
-            أزياء نسائية أنيقة
-          </small>
-
-          <b>
-            اكتشفي القسم ←
-          </b>
-
+          <small>أزياء نسائية أنيقة</small>
+          <b>اكتشفي القسم ←</b>
         </button>
 
         <button
+          class="category"
           type="button"
-          class="category cat-perfume"
           data-cat="عطور"
         >
-
           <div class="cat-icon">🌸</div>
-
           <strong>عطور</strong>
-
-          <small>
-            روائح مميزة
-          </small>
-
-          <b>
-            اكتشفي القسم ←
-          </b>
-
+          <small>روائح مميزة</small>
+          <b>اكتشفي القسم ←</b>
         </button>
 
         <button
+          class="category"
           type="button"
-          class="category cat-cosmetics"
           data-cat="مواد التجميل"
         >
-
           <div class="cat-icon">💄</div>
-
           <strong>مواد التجميل</strong>
-
-          <small>
-            لمسة جمالك اليومية
-          </small>
-
-          <b>
-            اكتشفي القسم ←
-          </b>
-
+          <small>لمسة جمالك اليومية</small>
+          <b>اكتشفي القسم ←</b>
         </button>
 
         <button
+          class="category"
           type="button"
-          class="category cat-shoes"
           data-cat="أحذية"
         >
-
           <div class="cat-icon">👠</div>
-
           <strong>أحذية</strong>
-
-          <small>
-            أناقة وراحة
-          </small>
-
-          <b>
-            اكتشفي القسم ←
-          </b>
-
+          <small>أناقة وراحة</small>
+          <b>اكتشفي القسم ←</b>
         </button>
 
       </div>
-
     </section>
 
-    <!-- المميزات -->
-    <section
-      id="benefits"
-      class="section"
-    >
+    <section id="benefits" class="section">
 
       <div class="benefits">
 
@@ -311,23 +175,14 @@
         </div>
 
       </div>
-
     </section>
 
-    <!-- المنتجات -->
-    <section
-      id="products"
-      class="section"
-    >
+    <section id="products" class="section">
 
       <div class="products-head">
-
         <div>
           <h2>منتجاتنا</h2>
-
-          <span>
-            اختاري ما يناسب ذوقكِ
-          </span>
+          <span>اختاري ما يناسب ذوقكِ</span>
         </div>
 
         <button
@@ -337,48 +192,28 @@
         >
           عرض الكل
         </button>
-
       </div>
 
-      <!-- مهم: app.js الحالي يبحث عن #list -->
-      <div
-        id="list"
-        class="products"
-      >
-
+      <div id="list" class="products">
         <div class="status">
           جاري تحميل المنتجات...
         </div>
-
       </div>
 
     </section>
 
-    <!-- العرض -->
     <section class="promo">
 
       <div>
-
         <span>🎁</span>
 
         <div>
-
-          <strong>
-            أهلاً بكِ في حياتي
-          </strong>
-
-          <p>
-            اختاري منتجاتكِ وأرسلي طلبكِ بسهولة.
-          </p>
-
+          <strong>أهلاً بكِ في حياتي</strong>
+          <p>اختاري منتجاتكِ وأرسلي طلبكِ بسهولة.</p>
         </div>
-
       </div>
 
-      <a
-        href="#products"
-        class="primary"
-      >
+      <a href="#products" class="primary">
         تسوقي الآن
       </a>
 
@@ -386,12 +221,7 @@
 
   </main>
 
-  <!-- السلة -->
-  <div
-    id="cartModal"
-    class="overlay hidden"
-    aria-hidden="true"
-  >
+  <div id="cartModal" class="overlay hidden">
 
     <div class="modal">
 
@@ -399,32 +229,19 @@
         id="closeCart"
         class="close"
         type="button"
-        aria-label="إغلاق"
       >
         ×
       </button>
 
-      <h2>
-        سلة المشتريات
-      </h2>
+      <h2>سلة المشتريات</h2>
 
       <div id="cartItems">
-        <p class="status">
-          السلة فارغة.
-        </p>
+        <p class="status">السلة فارغة.</p>
       </div>
 
       <div class="total">
-
-        <span>
-          المجموع
-        </span>
-
-        <!-- مهم: app.js الحالي يبحث عن #total -->
-        <strong id="total">
-          0
-        </strong>
-
+        <span>المجموع</span>
+        <strong id="total">0</strong>
       </div>
 
       <button
@@ -436,15 +253,9 @@
       </button>
 
     </div>
-
   </div>
 
-  <!-- إتمام الطلب -->
-  <div
-    id="checkoutModal"
-    class="overlay hidden"
-    aria-hidden="true"
-  >
+  <div id="checkoutModal" class="overlay hidden">
 
     <div class="modal checkout-modal">
 
@@ -452,92 +263,69 @@
         id="closeCheckout"
         class="close"
         type="button"
-        aria-label="إغلاق"
       >
         ×
       </button>
 
-      <h2>
-        معلومات الطلب
-      </h2>
+      <h2>معلومات الطلب</h2>
 
       <p class="hint">
-        يرجى إدخال معلوماتك بشكل صحيح حتى يتم التواصل معك لتأكيد الطلب.
+        يرجى إدخال معلوماتك بشكل صحيح لتأكيد الطلب.
       </p>
 
       <form id="orderForm">
 
         <label>
           الاسم واللقب
-
           <input
             type="text"
             name="customer_name"
             required
             autocomplete="name"
-            placeholder="اكتب الاسم واللقب"
           >
-
         </label>
 
         <label>
           رقم الهاتف
-
           <input
             type="tel"
             name="phone"
             required
             autocomplete="tel"
-            placeholder="مثال: 0550000000"
+            placeholder="0550000000"
           >
-
         </label>
 
         <label>
           الولاية
-
           <select
             id="wilaya"
             name="wilaya"
             required
           >
-
-            <option value="">
-              اختاري الولاية
-            </option>
-
+            <option value="">اختاري الولاية</option>
           </select>
-
         </label>
 
         <label>
           البلدية
-
           <input
             type="text"
             name="municipality"
             required
-            placeholder="اكتب البلدية"
           >
-
         </label>
 
         <label>
           نقطة الاستلام
-
           <input
             type="text"
             name="pickup_point"
             required
-            placeholder="اكتب نقطة الاستلام أو العنوان"
           >
-
         </label>
 
-        <div
-          id="orderMsg"
-          aria-live="polite"
-        ></div>
+        <div id="orderMsg"></div>
 
         <button
           id="submitOrder"
@@ -550,19 +338,11 @@
       </form>
 
     </div>
-
   </div>
 
-  <!-- الرسائل -->
-  <div
-    id="toast"
-    class="toast"
-    aria-live="polite"
-  ></div>
+  <div id="toast" class="toast"></div>
 
-  <!-- التذييل -->
   <footer id="contact">
-
     <div class="footer-brand">
       حياتي
       <small>HAYATI</small>
@@ -575,13 +355,9 @@
     <div>
       © 2026 حياتي - جميع الحقوق محفوظة
     </div>
-
   </footer>
 
-  <!-- إعدادات Supabase -->
   <script src="config.js"></script>
-
-  <!-- منطق المتجر -->
   <script src="app.js"></script>
 
 </body>
