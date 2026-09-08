@@ -31,7 +31,10 @@ jobs:
       - name: Prepare Admin App
         run: |
           rm -rf www
+          rm -rf resources
+
           mkdir -p www
+          mkdir -p resources
 
           cp admin.html www/admin.html
           cp admin.css www/admin.css
@@ -41,6 +44,8 @@ jobs:
           cp manager-calligraphy.png www/manager-calligraphy.png
           cp hayati-app-icon.png www/hayati-app-icon.png
 
+          cp hayati-app-icon.png resources/icon.png
+
           cat > www/index.html <<'EOF'
           <!DOCTYPE html>
           <html lang="ar" dir="rtl">
@@ -49,7 +54,7 @@ jobs:
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>حياتي - لوحة المدير</title>
             <script>
-              location.replace("admin.html");
+              window.location.replace("admin.html");
             </script>
           </head>
           <body>
@@ -58,21 +63,25 @@ jobs:
           </html>
           EOF
 
-      - name: Verify files
+      - name: Verify Web Files
         run: |
           test -f www/admin.html
           test -f www/admin.css
           test -f www/admin.js
           test -f www/config.js
+          test -f www/index.html
           test -f www/manager-calligraphy.png
           test -f www/hayati-app-icon.png
+          test -f resources/icon.png
 
-      - name: Create Android project
+          echo "All web files are present."
+
+      - name: Create Android Project
         run: |
           rm -rf android
           npx cap add android
 
-      - name: Generate Android Icons
+      - name: Generate Android App Icon
         run: |
           npx capacitor-assets generate --android
 
@@ -80,12 +89,14 @@ jobs:
         run: |
           npx cap sync android
 
-      - name: Verify assets
+      - name: Verify Android Assets
         run: |
           test -n "$(find android -type f -name 'manager-calligraphy.png' -print -quit)"
           test -n "$(find android/app/src/main/res -type f -name 'ic_launcher.png' -print -quit)"
 
-      - name: Force Gradle to Java 21
+          echo "Android assets verified."
+
+      - name: Force Gradle Java 21
         working-directory: android
         run: |
           echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
